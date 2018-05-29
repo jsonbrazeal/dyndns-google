@@ -14,7 +14,7 @@ def update_dns_entry(new_ip):
     url = f'https://domains.google.com/nic/update?hostname={os.environ["DYNDNS_HOSTNAME"]}&myip={new_ip}'
     auth = (os.environ['DYNDNS_USERNAME'], os.environ['DYNDNS_PASSWORD'])
     r = requests.post(url=url, auth=auth)
-    logger.debug(r.text)
+    logger.info(r.text)
     if not r.text.startswith('good'):
         logger.error('error updating domain:')
         logger.error(r.text)

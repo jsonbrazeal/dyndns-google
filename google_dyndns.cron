@@ -1,1 +1,1 @@
-* * * * * source /opt/google_dyndns/google_dyndns.env; /opt/google_dyndns/.venv/bin/python /opt/google_dyndns/google_dyndns.py
+*/15 * * * * source /opt/google_dyndns/google_dyndns.env; /opt/google_dyndns/.venv/bin/python /opt/google_dyndns/google_dyndns.py
