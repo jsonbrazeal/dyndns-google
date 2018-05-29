@@ -15,7 +15,7 @@ def update_dns_entry(new_ip):
     auth = (os.environ['DYNDNS_USERNAME'], os.environ['DYNDNS_PASSWORD'])
     r = requests.post(url=url, auth=auth)
     logger.info(f'Google Domains response: {r.text}')
-    if not r.text.startswith('good'):
+    if r.text.startswith('good'):
         logger.info('IP address successfully changed')
         return True
     elif r.text.startswith('nochg'):
