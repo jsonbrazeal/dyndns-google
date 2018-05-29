@@ -62,7 +62,7 @@ def log_ip(new_ip):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__file__)
     handler = SysLogHandler(address='/dev/log')
     logger.addHandler(handler)
