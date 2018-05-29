@@ -14,10 +14,16 @@ def update_dns_entry(new_ip):
     url = f'https://domains.google.com/nic/update?hostname={os.environ["DYNDNS_HOSTNAME"]}&myip={new_ip}'
     auth = (os.environ['DYNDNS_USERNAME'], os.environ['DYNDNS_PASSWORD'])
     r = requests.post(url=url, auth=auth)
-    logger.info(r.text)
+    logger.info(f'Google Domains response: {r.text}')
     if not r.text.startswith('good'):
-        logger.error('error updating domain:')
-        logger.error(r.text)
+        logger.info('IP address successfully changed')
+        return True
+    elif r.text.startswith('nochg'):
+        logger.error('No change in IP address...why was this function called?')
+        return False
+    else:
+        logger.error('Error updating domain!')
+        return False
 
 
 def get_new_ip():
@@ -76,5 +82,5 @@ if __name__ == '__main__':
         logger.info(f'IP address {old_ip} has not changed since last check')
     else:
         logger.info(f'IP address {old_ip} has changed to {new_ip} since last check')
-        update_dns_entry(new_ip)
-        log_ip(new_ip)
+        if update_dns_entry(new_ip):
+            log_ip(new_ip)
