@@ -65,8 +65,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger(__file__)
     handler = SysLogHandler(address='/dev/log')
-    # formatter = logging.Formatter('%(module)s.%(funcName)s: %(message)s')
-    # handler.setFormatter(formatter)
     logger.addHandler(handler)
 
     old_ip = get_old_ip()
@@ -78,7 +76,5 @@ if __name__ == '__main__':
         logger.info(f'IP address {old_ip} has not changed since last check')
     else:
         logger.info(f'IP address {old_ip} has changed to {new_ip} since last check')
-        # update_dns_entry(new_ip)
+        update_dns_entry(new_ip)
         log_ip(new_ip)
-
-    print(os.environ['DYNDNS_HOSTNAME'])
