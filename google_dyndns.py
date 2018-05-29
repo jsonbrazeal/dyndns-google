@@ -19,7 +19,7 @@ def update_dns_entry(new_ip):
         logger.info('IP address successfully changed')
         return True
     elif r.text.startswith('nochg'):
-        logger.error('No change in IP address...why was this function called?')
+        logger.error('No change in IP address')
         return False
     else:
         logger.error('Error updating domain!')
@@ -84,3 +84,5 @@ if __name__ == '__main__':
         logger.info(f'IP address {old_ip} has changed to {new_ip} since last check')
         if update_dns_entry(new_ip):
             log_ip(new_ip)
+        else:
+            logger.error('This program detected a change in IP address and tried to update it. Google Domains returned an error or a response that suggests it had already been changed. Further investigation needed.')
