@@ -5,15 +5,32 @@ from pathlib import Path
 from ipaddress import ip_address
 import logging
 from logging.handlers import SysLogHandler
+import smtplib
+from email.message import EmailMessage
 
 import requests
 from bs4 import BeautifulSoup
 
 
+def send_email(msg):
+    email = EmailMessage()
+    email.set_content(msg)
+    email['Subject'] = 'Google Domains Dynamic DNS'
+    email['From'] = os.environ['GMAIL_USERNAME']
+    email['To'] = os.environ['GMAIL_RECIPIENT']
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    s.ehlo()
+    s.login(os.environ['GMAIL_USERNAME'], os.environ['GMAIL_PASSWORD'])
+    s.send_message(email)
+    s.quit()
+
+
 def update_dns_entry(new_ip):
     url = f'https://domains.google.com/nic/update?hostname={os.environ["DYNDNS_HOSTNAME"]}&myip={new_ip}'
     auth = (os.environ['DYNDNS_USERNAME'], os.environ['DYNDNS_PASSWORD'])
-    r = requests.post(url=url, auth=auth)
+    logger.debug('Sending request to Google Domains')
+    r = requests.post(url=url, auth=auth, timeout=10)
     logger.info(f'Google Domains response: {r.text}')
     if r.text.startswith('good'):
         logger.info('IP address successfully changed')
@@ -84,5 +101,11 @@ if __name__ == '__main__':
         logger.info(f'IP address {old_ip} has changed to {new_ip} since last check')
         if update_dns_entry(new_ip):
             log_ip(new_ip)
+            send_email(f'home.jasonbrazeal.com IP address {old_ip} has changed to {new_ip}')
         else:
-            logger.error('This program detected a change in IP address and tried to update it. Google Domains returned an error or a response that suggests it had already been changed. Further investigation needed.')
+            logger.error('This program detected a change in IP address and tried to update it. '
+                         'Google Domains returned an error or a response that suggests it had '
+                         'already been changed. Further investigation needed.')
+            send_email('A change in IP address was detected for home.jasonbrazeal.com and an '
+                     ' update was attempted. Google Domains returned an error or a response '
+                     ' that suggests it had already been changed. Further investigation needed.')
